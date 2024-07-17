@@ -1,0 +1,572 @@
+<html><head><base href="https://websim.ai%20KEEP%20ALL%20FUNCTIONS.%20Change%20it%20to%20insert%20any%20time%20will%20be%20organised%20into%20time%20line.%20make%20a%20window%20on%20the%20left%20that%20has%20the%20date%20and%20event%20that%20can%20be%20clicked%20on%20and%20another%20pop%20up%20shows%20us%20the%20info%20related%20to%20that%20time.%20Make%20the%20Appearcence%20dark%20mode,%20with%20neon%20thin%20glowing%20borders%20gradient%20make%20the%20page%20interactive%20%20and%20provide%20clickable%20actions%20buttons%20for%20deeper%20insights.%20Fix%20the%20padding%20on%20the%20tim%20line%20should%20be%20more%20cetralised.%20add%20x%20buttons%20on.%20top%20right%20to%20delete%20if%20wish%20.%20fix%20the%20sidebar%20winder%20whould%20alway%20be%20in%20%20clean%20rectablular%20containers%20same%20width-%20they%20ar%20drop%20downs%20they%20click%20drop%20down%20to%20see%20contents"><title>ChronoVerse - Interactive Universal Timeline</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      display: flex;
+    }
+    .sidebar {
+      width: 300px;
+      height: 100vh;
+      overflow-y: auto;
+      background-color: #1e1e1e;
+      padding: 20px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+      height: 100vh;
+    }
+    h1, h2 {
+      color: #bb86fc;
+      text-align: center;
+    }
+    .timeline {
+      position: relative;
+      padding: 20px 0;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: linear-gradient(to bottom, #bb86fc, #3700b3);
+      box-shadow: 0 0 10px #bb86fc;
+    }
+    .entry {
+      position: relative;
+      margin-bottom: 30px;
+      width: 50%;
+    }
+    .entry:nth-child(odd) {
+      left: 0;
+      padding-right: 30px;
+    }
+    .entry:nth-child(even) {
+      left: 50%;
+      padding-left: 30px;
+    }
+    .entry-content {
+      position: relative;
+      padding: 20px;
+      background-color: #2e2e2e;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
+      border: 1px solid #bb86fc;
+      transition: all 0.3s ease;
+    }
+    .entry-content:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 20px rgba(187, 134, 252, 0.5);
+    }
+    .entry:nth-child(odd) .entry-content::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      right: -10px;
+      width: 0;
+      height: 0;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-left: 10px solid #2e2e2e;
+    }
+    .entry:nth-child(even) .entry-content::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: -10px;
+      width: 0;
+      height: 0;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-right: 10px solid #2e2e2e;
+    }
+    .time {
+      position: absolute;
+      top: 20px;
+      font-weight: bold;
+      color: #03dac6;
+    }
+    .entry:nth-child(odd) .time {
+      right: -150px;
+    }
+    .entry:nth-child(even) .time {
+      left: -150px;
+    }
+    a {
+      color: #03dac6;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    a:hover {
+      color: #bb86fc;
+    }
+    #upload-form {
+      margin-bottom: 20px;
+      padding: 20px;
+      background-color: #2e2e2e;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
+      border: 1px solid #bb86fc;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #bb86fc;
+      border-radius: 5px;
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+    }
+    button {
+      background-color: #bb86fc;
+      color: #121212;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #3700b3;
+    }
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #2e2e2e;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 20px rgba(187, 134, 252, 0.5);
+      z-index: 1000;
+      border: 1px solid #bb86fc;
+    }
+    .popup-content {
+      max-width: 500px;
+    }
+    .close-popup {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #bb86fc;
+    }
+    #share-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+    }
+    #share-panel {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 300px;
+      height: 100%;
+      background-color: #1e1e1e;
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .share-link {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #2e2e2e;
+      border-radius: 5px;
+      border: 1px solid #bb86fc;
+    }
+    .share-link input {
+      width: 70%;
+      margin-right: 5px;
+      background-color: #1e1e1e;
+      border: 1px solid #bb86fc;
+      color: #e0e0e0;
+      padding: 5px;
+    }
+    .share-link button {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+    .sidebar-item {
+      padding: 10px;
+      margin-bottom: 5px;
+      background-color: #2e2e2e;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .sidebar-item:hover {
+      background-color: #3e3e3e;
+    }
+    .sidebar-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .sidebar-item-content {
+      display: none;
+      padding-top: 10px;
+    }
+    .action-buttons {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
+    }
+    .action-button {
+      padding: 5px 10px;
+      font-size: 12px;
+      background-color: #03dac6;
+      color: #121212;
+    }
+    .action-button:hover {
+      background-color: #018786;
+    }
+    .delete-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: #cf6679;
+      color: #121212;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+      line-height: 20px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: #a00037;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar" id="sidebar"></div>
+  
+  <div class="main-content">
+    <h1>ChronoVerse: Interactive Universal Timeline</h1>
+    
+    <button id="share-btn" onclick="toggleSharePanel()">Share</button>
+    
+    <div id="upload-form">
+      <h2>Add to the Timeline</h2>
+      <form onsubmit="return addEntry(event)">
+        <textarea id="new-entry" placeholder="Enter new entry: Time: Event"></textarea>
+        <button type="submit">Add Entry</button>
+      </form>
+    </div>
+
+    <div class="timeline" id="timeline"></div>
+
+    <div id="share-panel">
+      <h2>Shared Links</h2>
+      <div id="shared-links"></div>
+      <button onclick="createShareLink()">Create New Share Link</button>
+    </div>
+
+    <div id="insight-popup" class="popup">
+      <div class="popup-content">
+        <span class="close-popup" onclick="closeInsightPopup()">&times;</span>
+        <h2>Insight</h2>
+        <div id="insight-content"></div>
+        <textarea id="new-insight" placeholder="Add new insight"></textarea>
+        <button onclick="saveInsight()">Save Insight</button>
+      </div>
+    </div>
+
+    <div id="event-popup" class="popup">
+      <div class="popup-content">
+        <span class="close-popup" onclick="closeEventPopup()">&times;</span>
+        <h2 id="event-title"></h2>
+        <p id="event-time"></p>
+        <p id="event-description"></p>
+        <div class="action-buttons">
+          <button class="action-button" onclick="showInsight()">Show Insight</button>
+          <button class="action-button" onclick="addToFavorites()">Add to Favorites</button>
+          <button class="action-button" onclick="shareEvent()">Share Event</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let timelineData = [
+      {
+        time: "13.8 billion years ago",
+        event: "The Big Bang",
+        link: "https://en.wikipedia.org/wiki/Big_Bang",
+        insight: "",
+        description: "The Big Bang theory is the prevailing cosmological model explaining the existence of the observable universe from the earliest known periods through its subsequent large-scale evolution."
+      },
+      {
+        time: "4.6 billion years ago",
+        event: "Formation of the Solar System",
+        link: "https://en.wikipedia.org/wiki/Formation_and_evolution_of_the_Solar_System",
+        insight: "",
+        description: "The formation and evolution of the Solar System began about 4.6 billion years ago with the gravitational collapse of a small part of a giant molecular cloud."
+      },
+      {
+        time: "3.5 billion years ago",
+        event: "Earliest evidence of life on Earth",
+        link: "https://en.wikipedia.org/wiki/Earliest_known_life_forms",
+        insight: "",
+        description: "The earliest known life forms on Earth are putative fossilized microorganisms, found in hydrothermal vent precipitates, considered to be about 3.42 billion years old."
+      },
+      {
+        time: "66 million years ago",
+        event: "Extinction of non-avian dinosaurs",
+        link: "https://en.wikipedia.org/wiki/Cretaceous%E2%80%93Paleogene_extinction_event",
+        insight: "",
+        description: "The Cretaceous–Paleogene extinction event was a sudden mass extinction of three-quarters of the plant and animal species on Earth, approximately 66 million years ago."
+      },
+      {
+        time: "300,000 years ago",
+        event: "Emergence of Homo sapiens",
+        link: "https://en.wikipedia.org/wiki/Human_evolution",
+        insight: "",
+        description: "The emergence of anatomically modern human hunter-gatherers, archaic Homo sapiens, from preceding species of Homo erectus, began about 300,000 years ago."
+      },
+      {
+        time: "12,000 years ago",
+        event: "Beginning of the Holocene epoch",
+        link: "https://en.wikipedia.org/wiki/Holocene",
+        insight: "",
+        description: "The Holocene is the current geological epoch. It began approximately 11,650 cal years before present, after the last glacial period, which concluded with the Holocene glacial retreat."
+      },
+      {
+        time: "1969 AD",
+        event: "First human on the Moon",
+        link: "https://en.wikipedia.org/wiki/Apollo_11",
+        insight: "",
+        description: "On July 20, 1969, American astronauts Neil Armstrong and Edwin 'Buzz' Aldrin became the first humans to land on the Moon as part of the Apollo 11 mission."
+      }
+    ];
+
+    let sharedLinks = [];
+
+    function renderTimeline() {
+      const timeline = document.getElementById('timeline');
+      const sidebar = document.getElementById('sidebar');
+      timeline.innerHTML = '';
+      sidebar.innerHTML = '';
+      
+      timelineData.sort((a, b) => new Date(a.time) - new Date(b.time));
+      
+      timelineData.forEach((entry, index) => {
+        const entryElement = document.createElement('div');
+        entryElement.className = 'entry';
+        entryElement.innerHTML = `
+          <div class="entry-content">
+            <button class="delete-btn" onclick="deleteEntry(${index})">×</button>
+            <span class="time">${entry.time}</span>
+            <h2>${entry.event}</h2>
+            <a href="${entry.link}" target="_blank">Learn more</a>
+            <div class="action-buttons">
+              <button class="action-button" onclick="openInsightPopup(${index})">Insight</button>
+              <button class="action-button" onclick="openEventPopup(${index})">Details</button>
+            </div>
+          </div>
+        `;
+        timeline.appendChild(entryElement);
+
+        const sidebarItem = document.createElement('div');
+        sidebarItem.className = 'sidebar-item';
+        sidebarItem.innerHTML = `
+          <div class="sidebar-item-header">
+            <strong>${entry.time}</strong>
+            <span>▼</span>
+          </div>
+          <div class="sidebar-item-content">
+            <p>${entry.event}</p>
+            <button class="action-button" onclick="openEventPopup(${index})">View Details</button>
+          </div>
+        `;
+        sidebarItem.querySelector('.sidebar-item-header').onclick = () => toggleSidebarItem(sidebarItem);
+        sidebar.appendChild(sidebarItem);
+      });
+    }
+
+    function toggleSidebarItem(item) {
+      const content = item.querySelector('.sidebar-item-content');
+      const arrow = item.querySelector('.sidebar-item-header span');
+      if (content.style.display === 'block') {
+        content.style.display = 'none';
+        arrow.textContent = '▼';
+      } else {
+        content.style.display = 'block';
+        arrow.textContent = '▲';
+      }
+    }
+
+    function deleteEntry(index) {
+      if (confirm('Are you sure you want to delete this entry?')) {
+        timelineData.splice(index, 1);
+        renderTimeline();
+      }
+    }
+
+    function addEntry(event) {
+      event.preventDefault();
+      const newEntryText = document.getElementById('new-entry').value;
+      const regex = /(.*?):\s*(.*)/;
+      const match = newEntryText.match(regex);
+      
+      if (match) {
+        const [, time, event] = match;
+        const newEntry = {
+          time: time.trim(),
+          event: event.trim(),
+          link: "#",
+          insight: "",
+          description: "No description available yet."
+        };
+        timelineData.push(newEntry);
+        renderTimeline();
+        document.getElementById('new-entry').value = '';
+      } else {
+        alert('Invalid entry format. Please use the format: Time: Event');
+      }
+      return false;
+    }
+
+    function openInsightPopup(index) {
+      const popup = document.getElementById('insight-popup');
+      const content = document.getElementById('insight-content');
+      const textarea = document.getElementById('new-insight');
+      
+      content.innerHTML = timelineData[index].insight || "No insight available yet.";
+      textarea.value = "";
+      popup.style.display = 'block';
+      popup.dataset.index = index;
+    }
+
+    function closeInsightPopup() {
+      document.getElementById('insight-popup').style.display = 'none';
+    }
+
+    function saveInsight() {
+      const popup = document.getElementById('insight-popup');
+      const index = popup.dataset.index;
+      const newInsight = document.getElementById('new-insight').value;
+      
+      if (newInsight) {
+        timelineData[index].insight = newInsight;
+        document.getElementById('insight-content').innerHTML = newInsight;
+        document.getElementById('new-insight').value = "";
+        renderTimeline();
+      }
+    }
+
+    function openEventPopup(index) {
+      const popup = document.getElementById('event-popup');
+      const title = document.getElementById('event-title');
+      const time = document.getElementById('event-time');
+      const description = document.getElementById('event-description');
+      
+      title.textContent = timelineData[index].event;
+      time.textContent = timelineData[index].time;
+      description.textContent = timelineData[index].description;
+      
+      popup.style.display = 'block';
+      popup.dataset.index = index;
+    }
+
+    function closeEventPopup() {
+      document.getElementById('event-popup').style.display = 'none';
+    }
+
+    function showInsight() {
+      const index = document.getElementById('event-popup').dataset.index;
+      closeEventPopup();
+      openInsightPopup(index);
+    }
+
+    function addToFavorites() {
+      alert('Event added to favorites!');
+      // Implement favorites functionality here
+    }
+
+    function shareEvent() {
+      alert('Event shared!');
+      // Implement event sharing functionality here
+    }
+
+    function toggleSharePanel() {
+      const panel = document.getElementById('share-panel');
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function createShareLink() {
+      const linkId = Math.random().toString(36).substr(2, 9);
+      const newLink = {
+        id: linkId,
+        name: `Share Link ${sharedLinks.length + 1}`,
+        views: 0,
+        shares: 0
+      };
+      sharedLinks.push(newLink);
+      renderSharedLinks();
+    }
+
+    function renderSharedLinks() {
+      const container = document.getElementById('shared-links');
+      container.innerHTML = '';
+      
+      sharedLinks.forEach(link => {
+        const linkElement = document.createElement('div');
+        linkElement.className = 'share-link';
+        linkElement.innerHTML = `
+          <input type="text" value="${link.name}" onchange="updateLinkName('${link.id}', this.value)">
+          <button onclick="copyLink('${link.id}')">Copy</button>
+          <button onclick="cancelLink('${link.id}')">Cancel</button>
+          <span>Views: ${link.views}, Shares: ${link.shares}</span>
+        `;
+        container.appendChild(linkElement);
+      });
+    }
+
+    function updateLinkName(id, newName) {
+      const link = sharedLinks.find(l => l.id === id);
+      if (link) {
+        link.name = newName;
+      }
+    }
+
+    function copyLink(id) {
+      const link = `https://chronoverse.art/share/${id}`;
+      navigator.clipboard.writeText(link).then(() => {
+        alert('Link copied to clipboard!');
+        const sharedLink = sharedLinks.find(l => l.id === id);
+        if (sharedLink) {
+          sharedLink.shares++;
+          renderSharedLinks();
+        }
+      });
+    }
+
+    function cancelLink(id) {
+      sharedLinks = sharedLinks.filter(l => l.id !== id);
+      renderSharedLinks();
+    }
+
+    renderTimeline();
+    renderSharedLinks();
+  </script>
+</body></html>
